@@ -1,12 +1,10 @@
+import dashboard from './dashboard'
+import systemMaster from './system-master'
+import userManagement from './user-management'
+
+
 export default [
-  {
-    title: 'Home',
-    to: { name: 'index' },
-    icon: { icon: 'tabler-smart-home' },
-  },
-  {
-    title: 'Second page',
-    to: { name: 'second-page' },
-    icon: { icon: 'tabler-file' },
-  },
+  ...dashboard,
+  ...systemMaster,
+  ...userManagement,
 ]
