@@ -1,4 +1,5 @@
 /* eslint-disable import/order */
+import '@/@mock-api'
 import '@/@iconify/icons-bundle'
 import App from '@/App.vue'
 import layoutsPlugin from '@/plugins/layouts'
