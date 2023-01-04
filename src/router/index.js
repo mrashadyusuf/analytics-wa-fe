@@ -1,7 +1,7 @@
 import { setupLayouts } from 'virtual:generated-layouts'
 import { createRouter, createWebHistory } from 'vue-router'
 import routes from '~pages'
-import { isUserLoggedIn } from './utils'
+import authUtils from '@/auth/utils'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,7 +11,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, _, next) => {
-  const isLoggedIn = isUserLoggedIn()
+  const isLoggedIn = authUtils.isUserLoggedIn()
 
   if (!isLoggedIn && to.path !== '/auth/login') {
     return next({ path: '/auth/login' })

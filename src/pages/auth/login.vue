@@ -5,7 +5,11 @@ import { themeConfig } from '@themeConfig'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { requiredValidator, emailValidator } from '@validators'
 import { VForm } from 'vuetify/components'
+import jwtProvider from '@/auth/jwt/jwtProvider'
+import authUtils from '@/auth/utils'
 
+const router = useRouter()
+const route = useRoute()
 const formRef = ref()
 
 const formData = ref({
@@ -30,13 +34,43 @@ const onSubmit = () => {
   })
 }
 
-const router = useRouter()
-const route = useRoute()
+const doLogin = async () => {
+  try {
+    const response = await jwtProvider.login({
+      username: formData.value.email,
+      password: formData.value.password,
+    })
 
-const doLogin = () => {
-  localStorage.setItem('userData', JSON.stringify(formData))
-  localStorage.setItem('accessToken', 'whatever')
-  router.replace(route.query.to ? String(route.query.to) : '/')
+    const { userData, userPermissions, accessToken, refreshToken } = response.data.data
+
+    jwtProvider.setAccessToken(accessToken)
+    jwtProvider.setRefreshToken(refreshToken)
+    authUtils.setUserData(userData)
+    authUtils.setUserPermissions(userPermissions)
+    if (formData.remember) {
+      authUtils.setUser(formData.value.email)
+    }
+
+    router.replace(route.query.to ? String(route.query.to) : '/')
+  } catch (e) {
+    // api error
+    if (e.response && !e.handled) {
+      e.handled = true
+      console.log('api error', e.response.data)
+    }
+
+    // programm error
+    if (!e.handled) {
+      console.error('Something went wrong!', e)
+    }
+
+    // reset localstorage
+    jwtProvider.removeAccessToken()
+    jwtProvider.removeRefreshToken()
+    authUtils.removeUser()
+    authUtils.removeUserData()
+    authUtils.removeUserPermissions()
+  }
 }
 </script>
 

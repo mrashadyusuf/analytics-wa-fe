@@ -1,5 +1,21 @@
 <script setup>
+import jwtProvider from '@/auth/jwt/jwtProvider'
+import authUtils from '@/auth/utils'
 import avatar1 from '@images/avatars/avatar-1.png'
+
+const route = useRoute()
+const router = useRouter()
+
+
+const doLogout = () => {
+  jwtProvider.removeAccessToken()
+  jwtProvider.removeRefreshToken()
+  authUtils.removeUser()
+  authUtils.removeUserData()
+  authUtils.removeUserPermissions()
+
+  router.replace(route.query.to ? String(route.query.to) : '/auth/login')
+}
 </script>
 
 <template>
@@ -111,7 +127,7 @@ import avatar1 from '@images/avatars/avatar-1.png'
           <VDivider class="my-2" />
 
           <!-- 👉 Logout -->
-          <VListItem to="/auth/login">
+          <VListItem @click="doLogout">
             <template #prepend>
               <VIcon
                 class="me-2"
