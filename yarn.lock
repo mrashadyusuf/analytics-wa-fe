@@ -4575,6 +4575,11 @@ svgo@^2.7.0, svgo@^2.8.0:
     picocolors "^1.0.0"
     stable "^0.1.8"
 
+sweetalert2@11.x:
+  version "11.6.16"
+  resolved "https://registry.npmjs.org/sweetalert2/-/sweetalert2-11.6.16.tgz"
+  integrity sha512-T2FO8LptErsjE4r0WMfiSk4YbeUvPadNaUZ/cADMEOnws000znrf8zFX9S5e/spvzJDyRI5En73WQyDZhGypxQ==
+
 table@^6.8.1:
   version "6.8.1"
   resolved "https://registry.npmjs.org/table/-/table-6.8.1.tgz"
@@ -4906,6 +4911,13 @@ vue-prism-component@^2.0.0:
   dependencies:
     "@vue/devtools-api" "^6.4.5"
 
+vue-sweetalert2@^5.0.5:
+  version "5.0.5"
+  resolved "https://registry.npmjs.org/vue-sweetalert2/-/vue-sweetalert2-5.0.5.tgz"
+  integrity sha512-Q7+TjQxNwGruT2jfPaSKMz18HHWs81r4umEwlrrtOf/QL5Iwl1T+tUaNkcvKB7Rf9rYftubt7NnOMjfDMnDH3A==
+  dependencies:
+    sweetalert2 "11.x"
+
 vue-template-compiler@^2.7.14:
   version "2.7.14"
   resolved "https://registry.npmjs.org/vue-template-compiler/-/vue-template-compiler-2.7.14.tgz"
@@ -4922,7 +4934,7 @@ vue-tsc@^1.0.9:
     "@volar/vue-language-core" "1.0.10"
     "@volar/vue-typescript" "1.0.10"
 
-"vue@^2.6.12 || ^3.2.4", "vue@^2.6.14 || ^3.2.0", vue@^3.0.0, "vue@^3.0.0-0 || ^2.6.0", vue@^3.0.11, vue@^3.2.0, vue@^3.2.25, vue@^3.2.45, "vue@> 3.0.0", vue@>=3, "vue@2 || 3", vue@3.2.45:
+vue@*, "vue@^2.6.12 || ^3.2.4", "vue@^2.6.14 || ^3.2.0", vue@^3.0.0, "vue@^3.0.0-0 || ^2.6.0", vue@^3.0.11, vue@^3.2.0, vue@^3.2.25, vue@^3.2.45, "vue@> 3.0.0", vue@>=3, "vue@2 || 3", vue@3.2.45:
   version "3.2.45"
   resolved "https://registry.npmjs.org/vue/-/vue-3.2.45.tgz"
   integrity sha512-9Nx/Mg2b2xWlXykmCwiTUCWHbWIj53bnkizBxKai1g61f2Xit700A1ljowpTIM11e3uipOeiPcSqnmBg6gyiaA==

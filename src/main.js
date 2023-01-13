@@ -5,6 +5,7 @@ import App from '@/App.vue'
 import layoutsPlugin from '@/plugins/layouts'
 import vuetify from '@/plugins/vuetify'
 import { loadFonts } from '@/plugins/webfontloader'
+import { swal, swalOptions } from '@/plugins/vue-sweetalert2'
 import router from '@/router'
 import '@core/scss/template/index.scss'
 import '@styles/styles.scss'
@@ -23,6 +24,7 @@ app.use(vuetify)
 app.use(createPinia())
 app.use(router)
 app.use(layoutsPlugin)
+app.use(swal, swalOptions)
 
 // Mount vue app
 app.mount('#app')
