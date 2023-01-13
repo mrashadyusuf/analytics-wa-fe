@@ -4,27 +4,30 @@ import authV1TopShape from '@images/svg/auth-v1-top-shape.svg'
 import { themeConfig } from '@themeConfig'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { requiredValidator, emailValidator } from '@validators'
-import { VForm } from 'vuetify/components'
 import jwtProvider from '@/auth/jwt/jwtProvider'
 import authUtils from '@/auth/utils'
 
 const router = useRouter()
 const route = useRoute()
+
 const formRef = ref()
 
-const formData = ref({
-  email: '',
-  password: '',
-  remember: false,
+const formState = reactive({
+  loading: false,
+  isUserRemember: false,
+  isPasswordVisible: false,
 })
 
-const errors = ref({
+const formData = reactive({
+  username: '',
+  password: '',
+})
+
+const formErrors = reactive({
   form: '',
-  email: '',
+  username: '',
   password: '',
 })
-
-const isPasswordVisible = ref(false)
 
 const onSubmit = () => {
   formRef.value?.validate().then(({ valid: isValid }) => {
@@ -35,10 +38,11 @@ const onSubmit = () => {
 }
 
 const doLogin = async () => {
+  formState.loading = true
   try {
     const response = await jwtProvider.login({
-      username: formData.value.email,
-      password: formData.value.password,
+      username: formData.username,
+      password: formData.password,
     })
 
     const { userData, userPermissions, accessToken, refreshToken } = response.data.data
@@ -56,7 +60,12 @@ const doLogin = async () => {
     // api error
     if (e.response && !e.handled) {
       e.handled = true
-      console.log('api error', e.response.data)
+
+      const { message } = e.response.data
+
+      formErrors.form = message
+      formErrors.username = ''
+      formErrors.password = ''
     }
 
     // programm error
@@ -71,6 +80,7 @@ const doLogin = async () => {
     authUtils.removeUserData()
     authUtils.removeUserPermissions()
   }
+  formState.loading = false
 }
 </script>
 
@@ -94,6 +104,19 @@ const doLogin = async () => {
         class="auth-card pa-4"
         max-width="448"
       >
+        <VOverlay
+          v-model="formState.loading"
+          contained
+          persistent
+          scrim="#EAEAEA"
+          class="align-center justify-center"
+        >
+          <VProgressCircular
+            :size="50"
+            indeterminate
+            color="primary"
+          />
+        </VOverlay>
         <VCardItem class="justify-center">
           <template #prepend>
             <div class="d-flex">
@@ -126,6 +149,13 @@ const doLogin = async () => {
           </VAlert>
         </VCardText>
 
+        <VCardSubtitle
+          v-if="formErrors.form"
+          class="v-error-message px-6 text-center"
+        >
+          {{ formErrors.form }}
+        </VCardSubtitle>
+
         <VCardText>
           <VForm
             ref="formRef"
@@ -135,11 +165,11 @@ const doLogin = async () => {
               <!-- email -->
               <VCol cols="12">
                 <VTextField
-                  v-model="formData.email"
+                  v-model="formData.username"
                   label="Email"
                   type="email"
                   :rules="[requiredValidator, emailValidator]"
-                  :error-messages="errors.email"
+                  :error-messages="formErrors.username"
                 />
               </VCol>
 
@@ -148,17 +178,17 @@ const doLogin = async () => {
                 <VTextField
                   v-model="formData.password"
                   label="Password"
-                  :type="isPasswordVisible ? 'text' : 'password'"
-                  :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
+                  :type="formState.isPasswordVisible ? 'text' : 'password'"
+                  :append-inner-icon="formState.isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
                   :rules="[requiredValidator]"
-                  :error-messages="errors.password"
+                  :error-messages="formErrors.password"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
 
                 <!-- remember me checkbox -->
                 <div class="d-flex align-center justify-space-between flex-wrap mt-2 mb-4">
                   <VCheckbox
-                    v-model="formData.remember"
+                    v-model="formState.isUserRemember"
                     label="Remember me"
                   />
 
@@ -202,6 +232,10 @@ const doLogin = async () => {
 
 <style lang="scss">
 @use "@core/scss/template/pages/page-auth.scss";
+
+.v-error-message  {
+  color: rgb(var(--v-theme-error));
+}
 </style>
 
 <route lang="yaml">
