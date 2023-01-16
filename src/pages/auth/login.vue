@@ -61,7 +61,10 @@ const doLogin = async () => {
     if (e.response && !e.handled) {
       e.handled = true
 
-      const { message } = e.response.data
+      let { message } = e.response.data
+      if (e.response.status === 500) {
+        message = 'Internal server error'
+      }
 
       formErrors.form = message
       formErrors.username = ''
