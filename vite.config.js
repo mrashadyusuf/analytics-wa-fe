@@ -65,7 +65,4 @@ export default defineConfig({
       './src/**/*.vue',
     ],
   },
-  server: {
-    port: 9090,
-  },
 })
