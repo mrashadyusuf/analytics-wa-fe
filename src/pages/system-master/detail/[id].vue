@@ -24,7 +24,7 @@ const doFind = async () => {
   formState.loading = true
   try {
     const params = { id: route.params.id }
-    const response = await axios.get('/system-master/find', { params })
+    const response = await axios.get('/systems/find', { params })
     const { data } = response.data
 
     formData.id = data.id

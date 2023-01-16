@@ -43,7 +43,7 @@ const doSubmit = async () => {
       system_value: formData.value,
     }
 
-    await axios.post('/system-master', body)
+    await axios.post('/systems', body)
 
     swal.fire({
       icon: 'success',

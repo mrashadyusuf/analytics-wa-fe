@@ -26,7 +26,7 @@ const doSearch = async options => {
       perPage: perPage.value,
     }
 
-    const response = await axios.get('/system-master', { params })
+    const response = await axios.get('/systems', { params })
     const { data } = response.data
 
     items.value = data

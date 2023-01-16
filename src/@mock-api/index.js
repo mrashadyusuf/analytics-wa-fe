@@ -1,9 +1,7 @@
-import mock from './mock'
+import mock from '@/@mock-api/mock'
 
-// AUTH
-import './apis/auth/auth'
-
-// SYSTEM MASTER
-import './apis/system-master/system-master'
+import '@/@mock-api/api/auth'
+import '@/@mock-api/api/systems'
+import '@/@mock-api/api/users'
 
 mock.onAny().passThrough() // forwards the matched request over network

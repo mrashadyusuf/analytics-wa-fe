@@ -2,41 +2,8 @@
 /* eslint-disable no-console */
 import mock from '@/@mock-api/mock'
 import { delay } from '@/@mock-api/utils'
-
-import avatar1 from '@/assets/images/avatars/avatar-1.png'
-import avatar2 from '@/assets/images/avatars/avatar-2.png'
-
-const items = [
-  {
-    id: 1,
-    username: 'admin@demo.com',
-    email: 'admin@demo.com',
-    fullname: 'Administrator',
-    password: 'admin',
-    avatar: avatar1,
-    group: 'admin',
-    permissions: [{ action: 'manage', subject: 'all' }],
-    accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluQGRlbW8uY29tIiwicm9sZSI6ImFkbWluIn0.dxyNWWAJX3TA6eTUpy6X5wkbWez3LZ2qZ7wtYjB_xfc',
-    refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluQGRlbW8uY29tIiwicm9sZSI6ImFkbWluIn0.dxyNWWAJX3TA6eTUpy6X5wkbWez3LZ2qZ7wtYjB_xfc',
-  },
-  {
-    id: 2,
-    username: 'client@demo.com',
-    email: 'client@demo.com',
-    fullname: 'Client',
-    password: 'client',
-    avatar: avatar2,
-    group: 'client',
-    permissions: [
-      { subject: 'Error', action: 'read' },
-      { subject: 'Auth', action: 'read' },
-      { subject: 'Profile', action: 'read' },
-      { subject: 'Dashboard', action: 'read' },
-    ],
-    accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNsaWVudEBkZW1vLmNvbSIsInJvbGUiOiJjbGllbnQifQ.iAvLdKs4sIFyKDsOmniyMNJClBCAMl5ZsDu9CAx0-hA',
-    refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNsaWVudEBkZW1vLmNvbSIsInJvbGUiOiJjbGllbnQifQ.iAvLdKs4sIFyKDsOmniyMNJClBCAMl5ZsDu9CAx0-hA',
-  },
-]
+import { jwtSign } from '@/@mock-api/jwt'
+import items from '@/@mock-api/data/users'
 
 // api
 const url = '/auth'
@@ -55,8 +22,8 @@ mock.onPost(`${url}/login`).reply(async request => {
     } else {
       const userData = { ...item }
       const userPermissions = item.permissions
-      const accessToken = item.accessToken
-      const refreshToken = item.refreshToken
+      const accessToken = await jwtSign({ username: item.username, group: item.group })
+      const refreshToken = await jwtSign({ username: item.username, group: item.group })
 
       delete userData.password
       delete userData.permissions
