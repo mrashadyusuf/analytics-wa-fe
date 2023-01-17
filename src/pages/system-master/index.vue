@@ -67,7 +67,7 @@ const doDelete = item => {
       try {
         const params = { id: item.id }
 
-        await axios.delete('/system-master', { params })
+        await axios.delete('/systems', { params })
 
         return true
       } catch (e) {
