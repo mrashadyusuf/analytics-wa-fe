@@ -1,8 +1,8 @@
 import mock from '@/@mock-api/mock'
-import { paginateArray, paginateTotalPage } from '@/@mock-api/utils'
+import { paginateRows, sortRows } from '@/@mock-api/utils'
 
 // data
-import items from '@/@mock-api/data/systems'
+import { items, fields } from '@/@mock-api/data/systems'
 
 // api
 const url = '/systems'
@@ -15,29 +15,32 @@ mock.onGet(url).reply(async request => {
   console.debug(`${logRequest} GET ${url}:`, { params: request.params })
   let response = []
   try {
-    const { page = 1, perPage = 10, keyword = '' } = request.params
+    const { page = 1, perPage = 10, orderBy = '', dir = 'asc', keyword = '' } = request.params
     const keywordLower = keyword.toLowerCase()
 
-    const filteredData = items.filter(item =>
+    let filteredData = items.filter(item =>
       item.system_category.toLowerCase().includes(keywordLower) ||
       item.system_sub_category.toLocaleLowerCase().includes(keywordLower) ||
       item.system_code.toLocaleLowerCase().includes(keywordLower) ||
       item.system_value.toLocaleLowerCase().includes(keywordLower))
 
-    const paginateData = paginateArray(filteredData, perPage, page)
+    if (fields.includes(orderBy)) {
+      filteredData = filteredData.sort(sortRows(orderBy, dir))
+    }
+
+    const { rows, totalRows, totalPage } = paginateRows(filteredData, perPage, page)
 
     response = [
       200,
       {
-        data: paginateData,
+        data: rows,
         message: 'Data retrieve successfully',
       },
       {
-        'page': page,
-        'per-page': perPage,
-        'total-page': paginateTotalPage(filteredData, perPage),
-        'rows': paginateData.length,
-        'total-rows': filteredData.length,
+        'Page': page,
+        'Per-Page': perPage,
+        'Total-Rows': totalRows,
+        'Total-Page': totalPage,
       },
     ]
   } catch (e) {

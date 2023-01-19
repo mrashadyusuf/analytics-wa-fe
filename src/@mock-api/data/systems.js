@@ -1,6 +1,14 @@
 import chance from '@/@mock-api/chance'
 
-const items = Array.from({ length: 31 }, () => {
+export const fields = [
+  'id',
+  'system_category',
+  'system_sub_category',
+  'system_code',
+  'system_value',
+]
+
+export const items = Array.from({ length: 31 }, () => {
   return {
     id: chance.guid(),
     system_category:  `CATEGORY ${chance.string({ length: 3, alpha: true, numeric: false }).toUpperCase()}`,
@@ -9,5 +17,3 @@ const items = Array.from({ length: 31 }, () => {
     system_value: chance.word({ length:  6 }).toUpperCase(),
   }
 })
-
-export default items

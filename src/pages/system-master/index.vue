@@ -5,35 +5,46 @@ import { useTheme } from 'vuetify'
 const swal = inject('$swal')
 const vuetifyTheme = useTheme()
 
-const loading = ref(false)
-const searchCategory = ref('')
-const perPage = ref(10)
-const page = ref(1)
-const totalPage = ref(1)
-const totalRows = ref(0)
-const items = ref([])
+const filter = reactive({
+  keyword: '',
+})
+
+const table = reactive({
+  loading: false,
+  rows: [],
+  page: 1,
+  perPage: 10,
+  orderBy: '',
+  dir: '',
+  totalPage: 1,
+  totalRows: 0,
+})
 
 onMounted(() => {
   doSearch({ reload: true })
 })
 
 const doSearch = async options => {
-  loading.value = true
+  table.loading = true
   try {
     const params = {
-      keyword: searchCategory.value,
-      page: options?.reload ? 1 : page.value,
-      perPage: perPage.value,
+      keyword: filter.keyword,
+      page: options?.reload ? 1 : table.page,
+      perPage: options?.perPage ?? table.perPage,
+      orderBy: options?.orderBy ?? table.orderBy,
+      dir: options?.dir ?? table.dir,
     }
 
     const response = await axios.get('/systems', { params })
     const { data } = response.data
 
-    items.value = data
-    page.value = params.page
-    perPage.value = params.perPage
-    totalRows.value = response.headers['total-rows']
-    totalPage.value = response.headers['total-page']
+    table.rows = data ?? []
+    table.page = params.page
+    table.perPage = params.perPage
+    table.orderBy = params.orderBy
+    table.dir = params.dir
+    table.totalRows = response.headers['Total-Rows']
+    table.totalPage = response.headers['Total-Page']
   } catch (e) {
     // api error
     if (e.response && !e.handled) {
@@ -46,7 +57,7 @@ const doSearch = async options => {
       console.log(e)
     }
   }
-  loading.value = false
+  table.loading = false
 }
 
 
@@ -93,12 +104,18 @@ const doDelete = item => {
   })
 }
 
+const doSort = options => {
+  table.orderBy = options.orderBy
+  table.dir = options.dir
+  doSearch()
+}
+
 // Computing pagination data
-const paginationData = computed(() => {
-  const firstIndex = items.value.length ? (page.value - 1) * perPage.value + 1 : 0
-  const lastIndex = items.value.length + (page.value - 1) * perPage.value
+const paginationInfo = computed(() => {
+  const firstIndex = table.rows.length ? (table.page - 1) * table.perPage + 1 : 0
+  const lastIndex = table.rows.length + (table.page - 1) * table.perPage
   
-  return `Showing ${ firstIndex } to ${ lastIndex } of ${ totalRows.value ?? 0 } items`
+  return `Showing ${ firstIndex } to ${ lastIndex } of ${ table.totalRows ?? 0 } items`
 })
 </script>
 
@@ -114,7 +131,7 @@ const paginationData = computed(() => {
                 <!-- Search  -->
                 <div style="width: 20rem;">
                   <VTextField
-                    v-model="searchCategory"
+                    v-model="filter.keyword"
                     prepend-inner-icon="tabler-search"
                     placeholder="Please type keyword ... "
                     density="compact"
@@ -132,7 +149,7 @@ const paginationData = computed(() => {
               style="width: 80px;"
             >
               <VSelect
-                v-model="perPage"
+                v-model="table.perPage"
                 density="compact"
                 variant="outlined"
                 :items="[10, 20, 30, 50]"
@@ -158,7 +175,7 @@ const paginationData = computed(() => {
             class="text-no-wrap"
           >
             <VOverlay
-              v-model="loading"
+              v-model="table.loading"
               contained
               persistent
               class="align-center justify-center"
@@ -171,52 +188,42 @@ const paginationData = computed(() => {
             </VOverlay>
 
             <!-- table head -->
-            <thead>
-              <tr>
-                <th scope="col">
-                  CATEGORY
-                </th>
-                <th scope="col">
-                  SUB CATEGORY
-                </th>
-                <th scope="col">
-                  CODE
-                </th>
-                <th scope="col">
-                  VALUE
-                </th>
-                <th
-                  scope="col"
-                  class="text-center"
-                >
-                  ACTIONS
-                </th>
-              </tr>
-            </thead>
+            <CTableHeaderSortable 
+              :headers="[
+                { field: 'system_category', name: 'category', sortable: true },
+                { field: 'system_sub_category', name: 'sub category', sortable: true },
+                { field: 'system_code', name: 'code', sortable: true },
+                { field: 'system_value', name: 'value', sortable: true },
+                { field: 'actions', class: 'text-center' },
+              ]"
+              :order-by="table.orderBy"
+              :dir="table.dir"
+              @sort="doSort"
+            />
             <!-- table body -->
             <tbody>
               <tr
-                v-for="item in items"
-                :key="item.id"
+                v-for="row in table.rows"
+                :key="row.id"
               >
                 <!-- category -->
                 <td>
-                  <span class="text-base">{{ item.system_category }}</span>
+                  <span class="text-base">{{ row.system_category }}</span>
                 </td>
 
                 <!-- sub category -->
                 <td>
-                  <span class="text-base">{{ item.system_sub_category }}</span>
+                  <span class="text-base">{{ row.system_sub_category }}</span>
                 </td>
 
                 <!-- code -->
                 <td>
-                  <span class="text-base">{{ item.system_code }}</span>
+                  <span class="text-base">{{ row.system_code }}</span>
                 </td>
 
                 <!-- value -->
                 <td>
-                  <span class="text-base">{{ item.system_value }}</span>
+                  <span class="text-base">{{ row.system_value }}</span>
                 </td>
 
                 <!-- Actions -->
@@ -229,7 +236,7 @@ const paginationData = computed(() => {
                     size="x-small"
                     color="default"
                     variant="text"
-                    @click="$router.push(`/system-master/detail/${item.id}`)"
+                    @click="$router.push(`/system-master/detail/${row.id}`)"
                   >
                     <VIcon
                       size="22"
@@ -242,7 +249,7 @@ const paginationData = computed(() => {
                     size="x-small"
                     color="default"
                     variant="text"
-                    @click="$router.push(`/system-master/edit/${item.id}`)"
+                    @click="$router.push(`/system-master/edit/${row.id}`)"
                   >
                     <VIcon
                       size="22"
@@ -255,7 +262,7 @@ const paginationData = computed(() => {
                     size="x-small"
                     color="default"
                     variant="text"
-                    @click="doDelete(item)"
+                    @click="doDelete(row)"
                   >
                     <VIcon
                       size="22"
@@ -267,7 +274,7 @@ const paginationData = computed(() => {
             </tbody>
 
             <!-- table footer  -->
-            <tfoot v-show="!items.length">
+            <tfoot v-show="!table.rows.length">
               <tr>
                 <td
                   colspan="5"
@@ -283,14 +290,14 @@ const paginationData = computed(() => {
 
           <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3 px-5">
             <span class="text-sm text-disabled">
-              {{ paginationData }}
+              {{ paginationInfo }}
             </span>
 
             <VPagination
-              v-model="page"
+              v-model="table.page"
               size="small"
               :total-visible="5"
-              :length="totalPage"
+              :length="table.totalPage"
               @update:model-value="doSearch"
             />
           </VCardText>
@@ -299,3 +306,18 @@ const paginationData = computed(() => {
     </VRow>
   </section>
 </template>
+
+<style>
+  th .sortable {
+    cursor: pointer;
+  }
+  th .sortable:hover {
+    opacity: 0.8;
+  }
+  th .sortable .v-btn:not(.v-btn--active) {
+    display: none;
+  }
+  th .sortable:hover .v-btn:not(.v-btn--active) {
+    display: inline-grid;
+  }
+</style>

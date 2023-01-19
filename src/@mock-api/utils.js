@@ -1,3 +1,16 @@
+export const paginateRows = (array, perPage, page) => {
+  const rows = array.slice((page - 1) * perPage, page * perPage)
+  const totalRows = array.length
+  let totalPage = 1
+  if (totalRows % perPage > 0) {
+    totalPage = parseInt(totalRows / perPage) + 1
+  } else {
+    totalPage = parseInt(totalRows / perPage)
+  }
+
+  return { rows, totalRows, totalPage }
+}
+
 export const paginateArray = (array, perPage, page) => array.slice((page - 1) * perPage, page * perPage)
 
 export const paginateTotalPage = (array, perPage) => {
@@ -6,6 +19,20 @@ export const paginateTotalPage = (array, perPage) => {
   } else {
     return parseInt(array.length / perPage)
   }
+}
+
+export const sortRows = (key, dir) => (a, b) => {
+  const fieldA = a[key]
+  const fieldB = b[key]
+
+  let comparison = 0
+  if (fieldA > fieldB) {
+    comparison = dir === 'dsc' ? -1 : 1
+  } else if (fieldA < fieldB) {
+    comparison = dir === 'dsc' ? 1 : -1
+  }
+  
+  return comparison
 }
 
 export const sortCompare = key => (a, b) => {
