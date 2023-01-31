@@ -23,3 +23,9 @@
     </VCard>
   </div>
 </template>
+
+<route lang="yaml">
+meta:
+  subject: Dashboard
+  action: read
+</route>

@@ -3,7 +3,17 @@ import chance from '@/@mock-api/chance'
 import avatar1 from '@/assets/images/avatars/avatar-1.png'
 import avatar2 from '@/assets/images/avatars/avatar-2.png'
 
-const items = [
+export const fields = [
+  'id',
+  'username',
+  'email',
+  'fullname',
+  'avatar',
+  'group_code',
+  'group_name',
+]
+
+export const items = [
   {
     id: chance.guid(),
     username: 'admin@demo.com',
@@ -11,8 +21,8 @@ const items = [
     fullname: 'Administrator',
     password: 'admin',
     avatar: avatar1,
-    group: 'admin',
-    permissions: [{ action: 'manage', subject: 'all' }],
+    group_code: 'admin',
+    group_name: 'Administator',
   },
   {
     id: chance.guid(),
@@ -21,14 +31,7 @@ const items = [
     fullname: 'Client',
     password: 'client',
     avatar: avatar2,
-    group: 'client',
-    permissions: [
-      { subject: 'Error', action: 'read' },
-      { subject: 'Auth', action: 'read' },
-      { subject: 'Profile', action: 'read' },
-      { subject: 'Dashboard', action: 'read' },
-    ],
+    group_code: 'client',
+    group_name: 'Client',
   },
 ]
-
-export default items

@@ -3,6 +3,7 @@ import axios from '@axios'
 import { useTheme } from 'vuetify'
 
 const swal = inject('$swal')
+const constants = inject('$constants')
 const vuetifyTheme = useTheme()
 
 const loading = ref(false)
@@ -32,8 +33,8 @@ const doSearch = async options => {
     items.value = data
     page.value = params.page
     perPage.value = params.perPage
-    totalRows.value = response.headers['total-rows']
-    totalPage.value = response.headers['total-page']
+    totalRows.value = response.headers['Total-Rows']
+    totalPage.value = response.headers['Total-Page']
   } catch (e) {
     // api error
     if (e.response && !e.handled) {
@@ -142,7 +143,10 @@ const paginationData = computed(() => {
 
             <VSpacer />
 
-            <div class="d-flex align-center flex-wrap gap-4">
+            <div
+              v-if="$can(constants.ACTION.ADD, constants.SUBJECT.USERS)"
+              class="d-flex align-center flex-wrap gap-4"
+            >
               <VBtn
                 prepend-icon="tabler-plus"
               >
@@ -215,7 +219,7 @@ const paginationData = computed(() => {
 
                 <!-- value -->
                 <td>
-                  <span class="text-base">{{ item.group }}</span>
+                  <span class="text-base">{{ item.group_name }}</span>
                 </td>
 
                 <!-- Actions -->
@@ -236,6 +240,7 @@ const paginationData = computed(() => {
                   </VBtn>
 
                   <VBtn
+                    v-if="$can(constants.ACTION.EDIT, constants.SUBJECT.USERS)"
                     icon
                     size="x-small"
                     color="default"
@@ -248,6 +253,7 @@ const paginationData = computed(() => {
                   </VBtn>
 
                   <VBtn
+                    v-if="$can(constants.ACTION.DELETE, constants.SUBJECT.USERS)"
                     icon
                     size="x-small"
                     color="default"
@@ -296,3 +302,9 @@ const paginationData = computed(() => {
     </VRow>
   </section>
 </template>
+
+<route lang="yaml">
+meta:
+  subject: Users
+  action: read
+</route>

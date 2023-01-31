@@ -6,9 +6,12 @@ import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { requiredValidator, emailValidator } from '@validators'
 import jwtProvider from '@/auth/jwt/jwtProvider'
 import authUtils from '@/auth/utils'
+import { useAbility } from '@casl/vue'
+import { initialAbility, parseAbility, firstMenu } from '@/plugins/casl/config'
 
 const router = useRouter()
 const route = useRoute()
+const ability = useAbility()
 
 const formRef = ref()
 
@@ -47,15 +50,28 @@ const doLogin = async () => {
 
     const { userData, userPermissions, accessToken, refreshToken } = response.data.data
 
+    // save token & refresh token
     jwtProvider.setAccessToken(accessToken)
     jwtProvider.setRefreshToken(refreshToken)
-    authUtils.setUserData(userData)
-    authUtils.setUserPermissions(userPermissions)
-    if (formData.remember) {
-      authUtils.setUser(formData.value.email)
-    }
 
-    router.replace(route.query.to ? String(route.query.to) : '/')
+    // initialize user ability / permission
+    const permissions = parseAbility(userPermissions)
+
+    ability.update(permissions)
+    authUtils.setUserPermissions(permissions)
+
+    // initialize user data
+    const menu = firstMenu(permissions)
+
+    authUtils.setUserData({
+      fullname: userData.fullname,
+      email: userData.email,
+      group: userData.group_code,
+      avatar: userData.avatar,
+      homeRoute: menu.path,
+    })
+
+    router.replace(authUtils.getHomeRouteForLoggedInUser())
   } catch (e) {
     // api error
     if (e.response && !e.handled) {
@@ -185,7 +201,7 @@ const doLogin = async () => {
                   :append-inner-icon="formState.isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
                   :rules="[requiredValidator]"
                   :error-messages="formErrors.password"
-                  @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                  @click:append-inner="formState.isPasswordVisible = !formState.isPasswordVisible"
                 />
 
                 <!-- remember me checkbox -->
@@ -244,4 +260,7 @@ const doLogin = async () => {
 <route lang="yaml">
 meta:
   layout: blank
+  redirectIfLoggedIn: true
+  subject: Auth
+  action: read
 </route>

@@ -38,4 +38,9 @@ export default {
   isUserLoggedIn() {
     return localStorage.getItem('userData') && localStorage.getItem('accessToken')
   },
+  getHomeRouteForLoggedInUser() {
+    const userData = this.getUserData()
+
+    return userData?.homeRoute ?? '/'
+  },
 }

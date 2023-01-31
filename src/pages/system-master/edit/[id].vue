@@ -209,3 +209,9 @@ const doSubmit = async () => {
     </VCardText>
   </VCard>
 </template>
+
+<route lang="yaml">
+meta:
+  subject: Systems
+  action: edit
+</route>

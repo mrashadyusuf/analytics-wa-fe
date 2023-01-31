@@ -6,6 +6,13 @@ import avatar1 from '@images/avatars/avatar-1.png'
 const route = useRoute()
 const router = useRouter()
 
+const userData = authUtils.getUserData()
+
+const profile = reactive({
+  name: userData.fullname,
+  group: userData.group,
+  avatar: userData.avatar,
+})
 
 const doLogout = () => {
   jwtProvider.removeAccessToken()
@@ -32,7 +39,7 @@ const doLogout = () => {
       color="primary"
       variant="tonal"
     >
-      <VImg :src="avatar1" />
+      <VImg :src="profile.avatar" />
 
       <!-- SECTION Menu -->
       <VMenu
@@ -57,16 +64,20 @@ const doLogout = () => {
                     color="primary"
                     variant="tonal"
                   >
-                    <VImg :src="avatar1" />
+                    <VImg :src="profile.avatar" />
                   </VAvatar>
                 </VBadge>
               </VListItemAction>
             </template>
 
             <VListItemTitle class="font-weight-semibold">
-              John Doe
+              {{ profile.name }}
             </VListItemTitle>
-            <VListItemSubtitle>Admin</VListItemSubtitle>
+            <VListItemSubtitle
+              class="text-capitalize"
+            >
+              {{ profile.group }}
+            </VListItemSubtitle>
           </VListItem>
 
           <VDivider class="my-2" />

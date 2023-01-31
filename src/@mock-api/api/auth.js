@@ -1,9 +1,8 @@
-/* eslint-disable global-require */
-/* eslint-disable no-console */
 import mock from '@/@mock-api/mock'
 import { delay } from '@/@mock-api/utils'
 import { jwtSign } from '@/@mock-api/jwt'
-import items from '@/@mock-api/data/users'
+import { items as users } from '@/@mock-api/data/users'
+import { items as permissions } from '@/@mock-api/data/permissions'
 
 // api
 const url = '/auth'
@@ -16,17 +15,16 @@ mock.onPost(`${url}/login`).reply(async request => {
   let response = []
   try {
     const { username, password } = JSON.parse(request.data)
-    const item = items.find(u => u.username === username && u.password === password)
-    if (!item) {
+    const user = users.find(u => u.username === username && u.password === password)
+    if (!user) {
       response = [401, { message: 'Invalid Username or Password' }]
     } else {
-      const userData = { ...item }
-      const userPermissions = item.permissions
-      const accessToken = await jwtSign({ username: item.username, group: item.group })
-      const refreshToken = await jwtSign({ username: item.username, group: item.group })
+      const userData = { ...user }
+      const accessToken = await jwtSign({ username: user.username, group: user.group_code })
+      const refreshToken = await jwtSign({ username: user.username, group: user.group_code })
+      const userPermissions = permissions.filter(permission => permission.group_code === user.group_code)
 
       delete userData.password
-      delete userData.permissions
       delete userData.accessToken
       delete userData.refreshToken
 

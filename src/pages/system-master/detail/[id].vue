@@ -141,3 +141,9 @@ const doCancel = () => {
     </VCardText>
   </VCard>
 </template>
+
+<route lang="yaml">
+meta:
+  subject: Systems
+  action: read
+</route>

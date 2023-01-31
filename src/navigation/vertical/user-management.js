@@ -1,3 +1,5 @@
+import constants from "@/plugins/casl/constants"
+
 export default [
   {
     title: 'User Management',
@@ -6,10 +8,14 @@ export default [
       {
         title: 'Users',
         to: { path: '/user-management/users' },
+        subject: constants.SUBJECT.USERS,
+        action: constants.ACTION.READ,
       },
       {
-        title: 'User Groups',
-        to: { path: '/user-management/user-groups' },
+        title: 'Groups',
+        to: { path: '/user-management/groups' },
+        subject: constants.SUBJECT.GROUPS,
+        action: constants.ACTION.READ,
       },
     ],
   },

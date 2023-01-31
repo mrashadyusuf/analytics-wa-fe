@@ -1,5 +1,5 @@
 <script setup>
-import misc404 from '@images/pages/404.png'
+import misc401 from '@images/pages/401.png'
 import miscMaskDark from '@images/pages/misc-mask-dark.png'
 import miscMaskLight from '@images/pages/misc-mask-light.png'
 import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
@@ -10,8 +10,8 @@ const authThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark)
 <template>
   <div class="misc-wrapper">
     <ErrorHeader
-      error-title="Page Not Found :("
-      error-description="We couldn't find the page you are looking for."
+      error-title="You Are Not Allowed :("
+      error-description="You aren't allowed to access the page."
     />
     <VBtn
       to="/"
@@ -23,8 +23,8 @@ const authThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark)
     <!-- 👉 Image -->
     <div class="misc-avatar w-100 text-center">
       <VImg
-        :src="misc404"
-        alt="Not Found"
+        :src="misc401"
+        alt="Forbidden"
         :max-width="200"
         class="mx-auto"
       />

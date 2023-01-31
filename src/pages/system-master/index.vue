@@ -3,6 +3,7 @@ import axios from '@axios'
 import { useTheme } from 'vuetify'
 
 const swal = inject('$swal')
+const constants = inject('$constants')
 const vuetifyTheme = useTheme()
 
 const filter = reactive({
@@ -159,7 +160,10 @@ const paginationInfo = computed(() => {
 
             <VSpacer />
 
-            <div class="d-flex align-center flex-wrap gap-4">
+            <div
+              v-if="$can(constants.ACTION.ADD, constants.SUBJECT.SYSTEMS)"
+              class="d-flex align-center flex-wrap gap-4"
+            >
               <VBtn
                 prepend-icon="tabler-plus"
                 to="/system-master/add"
@@ -245,6 +249,7 @@ const paginationInfo = computed(() => {
                   </VBtn>
 
                   <VBtn
+                    v-if="$can(constants.ACTION.EDIT, constants.SUBJECT.SYSTEMS)"
                     icon
                     size="x-small"
                     color="default"
@@ -258,6 +263,7 @@ const paginationInfo = computed(() => {
                   </VBtn>
 
                   <VBtn
+                    v-if="$can(constants.ACTION.DELETE, constants.SUBJECT.SYSTEMS)"
                     icon
                     size="x-small"
                     color="default"
@@ -307,17 +313,8 @@ const paginationInfo = computed(() => {
   </section>
 </template>
 
-<style>
-  th .sortable {
-    cursor: pointer;
-  }
-  th .sortable:hover {
-    opacity: 0.8;
-  }
-  th .sortable .v-btn:not(.v-btn--active) {
-    display: none;
-  }
-  th .sortable:hover .v-btn:not(.v-btn--active) {
-    display: inline-grid;
-  }
-</style>
+<route lang="yaml">
+meta:
+  subject: Systems
+  action: read
+</route>
