@@ -17,7 +17,7 @@ However, if you wish to get actual prop types in `.vue` imports (for example to 
 See [Vite Configuration Reference](https://vitejs.dev/config/).
 
 ## Project Setup
-
+do not clone files in folders that contain spaces
 ```sh
 npm install
 ```
