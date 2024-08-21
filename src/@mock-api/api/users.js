@@ -16,7 +16,7 @@ mock.onGet(url).reply(async request => {
     const { page = 1, perPage = 10, orderBy = '', dir = 'asc', keyword = '' } = request.params
     const keywordLower = keyword.toLowerCase()
 
-    const filteredData = items.filter(item =>
+    let filteredData = items.filter(item =>
       item.email.toLocaleLowerCase().includes(keywordLower) ||
       item.fullname.toLocaleLowerCase().includes(keywordLower) ||
       item.group_name.toLocaleLowerCase().includes(keywordLower))

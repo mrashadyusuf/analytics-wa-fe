@@ -8,6 +8,7 @@ import jwtProvider from '@/auth/jwt/jwtProvider'
 import authUtils from '@/auth/utils'
 import { useAbility } from '@casl/vue'
 import { initialAbility, parseAbility, firstMenu } from '@/plugins/casl/config'
+import axios from 'axios'
 
 const router = useRouter()
 const route = useRoute()
@@ -40,32 +41,37 @@ const onSubmit = () => {
   })
 }
 
+const userDt = { userData: { id: "99fccad8-4340-5025-96f5-c690aaeb1e75", username: "admin@demo.com", email: "admin@demo.com", fullname: "Administrator", avatar: "/src/assets/images/avatars/avatar-1.png", group_code: "admin", group_name: "Administrator" }, userPermissions: [ { id: "47d0cb66-7046-5005-9912-ff76f3bd9d77", group_code: "admin", group_name: "Administrator", function_id: "Dashboard", function_name: "Dashboard", read: "Y", create: "Y", update: "Y", delete: "Y", download: "Y" }, { id: "62297053-fe16-55fa-bbdb-f75bfd7c758c", group_code: "admin", group_name: "Administrator", function_id: "Systems", function_name: "System Master", read: "Y", create: "Y", update: "Y", delete: "Y", download: "Y" }, { id: "0eb29bff-8f97-5abd-9ef5-1bec7326b8b5", group_code: "admin", group_name: "Administrator", function_id: "Users", function_name: "Users", read: "Y", create: "Y", update: "Y", delete: "Y", download: "Y" }, { id: "f4d68ea9-324a-5200-8f39-51209730b141", group_code: "admin", group_name: "Administrator", function_id: "Groups", function_name: "Groups", read: "Y", create: "Y", update: "Y", delete: "Y", download: "Y" } ] };
+
 const doLogin = async () => {
   formState.loading = true
   try {
-    const response = await jwtProvider.login({
+    // Make API request to your backend
+    const response = await axios.post('http://127.0.0.1:8000/auth/login', {
       username: formData.username,
       password: formData.password,
     })
 
-    const { userData, userPermissions, accessToken, refreshToken } = response.data.data
+    console.log("response", response)
+    // You can use actual API response or mock data for demonstration
+    const { userData, userPermissions } = userDt
 
-    // save token & refresh token
-    jwtProvider.setAccessToken(accessToken)
-    jwtProvider.setRefreshToken(refreshToken)
+    // Save token & refresh token
+    jwtProvider.setAccessToken(response.data.access_token)
+    jwtProvider.setRefreshToken(response.data.access_token)
 
-    // initialize user ability / permission
+    // Initialize user ability / permission
     const permissions = parseAbility(userPermissions)
 
     ability.update(permissions)
     authUtils.setUserPermissions(permissions)
 
-    // initialize user data
+    // Initialize user data
     const menu = firstMenu(permissions)
 
     authUtils.setUserData({
-      fullname: userData.fullname,
-      email: userData.email,
+      fullname: "admin",
+      email: "admin@gmail.com",
       group: userData.group_code,
       avatar: userData.avatar,
       homeRoute: menu.path,
@@ -73,12 +79,14 @@ const doLogin = async () => {
 
     router.replace(authUtils.getHomeRouteForLoggedInUser())
   } catch (e) {
-    // api error
+    // API error handling
     if (e.response && !e.handled) {
       e.handled = true
 
-      let { message } = e.response.data
-      if (e.response.status === 500) {
+      let message = e.response.data.detail || 'An error occurred'
+      if (e.response.status === 401) {
+        message = 'Invalid username or password'
+      } else if (e.response.status === 500) {
         message = 'Internal server error'
       }
 
@@ -87,12 +95,12 @@ const doLogin = async () => {
       formErrors.password = ''
     }
 
-    // programm error
+    // Programmatic error handling
     if (!e.handled) {
       console.error('Something went wrong!', e)
     }
 
-    // reset localstorage
+    // Reset local storage if needed
     jwtProvider.removeAccessToken()
     jwtProvider.removeRefreshToken()
     authUtils.removeUser()
@@ -101,6 +109,8 @@ const doLogin = async () => {
   }
   formState.loading = false
 }
+
+
 </script>
 
 <template>
@@ -187,7 +197,7 @@ const doLogin = async () => {
                   v-model="formData.username"
                   label="Email"
                   type="email"
-                  :rules="[requiredValidator, emailValidator]"
+                  :rules="[requiredValidator]"
                   :error-messages="formErrors.username"
                 />
               </VCol>
