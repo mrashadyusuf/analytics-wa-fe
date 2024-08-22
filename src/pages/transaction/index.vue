@@ -159,6 +159,11 @@ const paginationInfo = computed(() => {
 
   return `Showing ${firstIndex} to ${lastIndex} of ${table.totalRows ?? 0} items`
 })
+
+const formatCurrency=(value) => {
+    let val = (value/1).toFixed(0).replace('.', ',')
+    return `${val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`
+}
 </script>
 
 <template>
@@ -227,17 +232,17 @@ const paginationInfo = computed(() => {
           
             <CTableHeaderSortable 
               :headers="[
-                { field: 'no', name: 'No', sortable: true }, 
-                { field: 'name_cust', name: 'Nama', sortable: true },
-                { field: 'model_product', name: 'Model', sortable: true },
-                { field: 'address_cust', name: 'Alamat', sortable: true },
-                { field: 'no_hp_cust', name: 'No Telp', sortable: true },
-                { field: 'prov_cust', name: 'Provinsi', sortable: true },
-                { field: 'city_cust', name: 'Kota/Kab', sortable: true },
-                { field: 'instagram_cust', name: 'Instagram', sortable: true },
-                { field: 'price_product', name: 'Produk', sortable: true }, 
-                { field: 'prov_cust', name: 'Provinsi', sortable: true },
-                { field: 'actions',name:'Actions', class: 'text-center' },
+                { field: 'no', name: 'No', class: 'text-center' },
+                { field: 'transaction_id', name: 'ID Transaksi', class: 'text-center' },
+                { field: 'name_cust', name: 'Nama', class: 'text-center' },
+                { field: 'model_product', name: 'Model', class: 'text-center' },
+                { field: 'price_product', name: 'Harga', class: 'text-center harga-column' },
+                { field: 'address_cust', name: 'Alamat', class: 'text-center' },
+                { field: 'no_hp_cust', name: 'No Telp', class: 'text-center' },
+                { field: 'prov_cust', name: 'Provinsi', class: 'text-center' },
+                { field: 'city_cust', name: 'Kota/Kab', class: 'text-center' },
+                { field: 'instagram_cust', name: 'Instagram', class: 'text-center' },
+                { field: 'actions', name: 'Actions', class: 'text-center' },               
               ]"
               :order-by="table.orderBy"
               :dir="table.dir"
@@ -250,16 +255,19 @@ const paginationInfo = computed(() => {
                 v-for="(row, index) in table.rows"
                 :key="row.transaction_id"
               >
-                <td>{{ index + 1 }}</td> <!-- Row number -->
-                <td>{{ row.name_cust }}</td>
-                <td>{{ row.model_product }}</td>
+                <td style="text-align: center;">{{ index + 1 }}</td> <!-- Row number -->
+                <td style="text-align: center;">{{ row.transaction_id }}</td>
+                <td style="text-align: center;">{{ row.name_cust }}</td>
+                <td style="text-align: center;">{{ row.model_product }}</td>
+                <td style="text-align: right; position: relative;">
+                  <span style="position: absolute; left: 10px;">Rp</span>
+                  <span>{{ formatCurrency(row.price_product) }}</span>                
+                </td>
                 <td>{{ row.address_cust }}</td>
-                <td>{{ row.no_hp_cust }}</td>
-                <td>{{ row.prov_cust }}</td>
-                <td>{{ row.city_cust }}</td>
-                <td>{{ row.instagram_cust }}</td>
-                <td>{{ row.price_product }}</td>
-                <td>{{ row.prov_cust }}</td> <!-- Duplicate field -->
+                <td style="text-align: center;">{{ row.no_hp_cust }}</td>
+                <td style="text-align: center;">{{ row.prov_cust }}</td>
+                <td style="text-align: center;">{{ row.city_cust }}</td>
+                <td style="text-align: center;">{{ row.instagram_cust }}</td>
                 <!-- Actions -->
                 <td class="text-center" style="width: 5rem;">
                   <VBtn
@@ -327,7 +335,12 @@ const paginationInfo = computed(() => {
 
   </section>
 </template>
-
+<style>
+.harga-column {
+  min-width: 120px; /* Adjust the value as needed */
+  text-align: center;
+}
+</style>
 
 <route lang="yaml">
 meta:
