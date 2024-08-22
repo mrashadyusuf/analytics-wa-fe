@@ -32,7 +32,6 @@ const getTransactions = async (offset = 0, limit = 10) => {
     }
   })
   .then((res) => {
-      console.log("res", res);
       return res;
     })
     .catch((error) => {
@@ -42,7 +41,9 @@ const getTransactions = async (offset = 0, limit = 10) => {
   return response;
 }
 
-
+// Modal state
+const errorModal = ref(false)
+const errorMessage = ref('')
 
 onMounted(() => {
   doSearch({ reload: true })
@@ -59,18 +60,24 @@ const doSearch = async options => {
       dir: options?.dir ?? table.dir,
     }
 
-    const response = await getTransactions(params.page, params.perPage) // Ensure await is used here
+    const response = await getTransactions((params.page - 1) * params.perPage, params.perPage) // Ensure await is used here
   
     if (response && response.status === 200) {
-      console.log('Transactions:', response.data);
-      table.rows = response.data;
-      table.page = params.page;
+      table.rows = response.data.transactions;
+      table.page = Math.floor(response.data.offset / params.perPage) + 1;
       table.perPage = params.perPage;
-      table.totalRows = response.data.length;
-      table.totalPage = Math.ceil(response.data.length / table.perPage);
+      table.totalRows = response.data.total_all_data;
+      table.totalPage = Math.ceil(response.data.total_all_data / table.perPage);
     } else if (response && response.status === 401) {
       console.error('Unauthorized access - redirecting to login.');
-      doLogout()
+      // Show the error message in the modal
+      errorMessage.value = 'Unauthorized access. You will be logged out in 3 seconds.';
+      errorModal.value = true;
+
+      // Trigger logout after 3 seconds
+      setTimeout(() => {
+        doLogout(router, route)
+      }, 3000);    
     } else {
       console.error('Failed to fetch transactions:', response);
     }
@@ -87,14 +94,12 @@ const doSearch = async options => {
   table.loading = false
 }
 
-
-
 const doDelete = item => {
   const currentThemeName = vuetifyTheme.name.value
 
   swal.fire({
     title: 'Delete',
-    html: `Are you sure you want to delete this data?<br/>This action can not be undone.`,
+    html: `Are you sure you want to delete this transaction?<br/>This action cannot be undone.`,
     focusCancel: true,
     showCancelButton: true,
     showConfirmButton: true,
@@ -104,32 +109,41 @@ const doDelete = item => {
     cancelButtonColor: vuetifyTheme.themes.value[currentThemeName].colors.secondary,
     preConfirm: async () => {
       try {
-        const params = { id: item.id }
-
-        await axios.delete('/systems', { params })
-
-        return true
+        // Assuming the transaction_id is passed in item.transaction_id
+        const response = await axiosInstance.delete(`/transactions/${item.transaction_id}`);
+        if (response.status == 200){
+          swal.fire({
+          icon: 'success',
+          title: 'Delete transaction successfully',
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 1000,
+          timerProgressBar: true,
+      })
+        }
+        return true;  // Indicate success
       } catch (e) {
-        // api error
+        // Handle API errors
         if (e.response && !e.handled) {
-          e.handled = true
-          alert('Something went wrong!')
+          e.handled = true;
+          alert('Something went wrong!');
         }
 
-        // app error
+        // Handle any other errors
         if (!e.handled) {
-          console.log(e)
+          console.log(e);
         }
 
-        return false
+        return false;  // Indicate failure
       }
     },
   }).then(result => {
-    // success
+    // If the deletion was successful, refresh the data
     if (result.value) {
-      doSearch()
+      doSearch();
     }
-  })
+  });
 }
 
 const doSort = options => {
@@ -145,20 +159,17 @@ const paginationInfo = computed(() => {
 
   return `Showing ${firstIndex} to ${lastIndex} of ${table.totalRows ?? 0} items`
 })
-
-
 </script>
 
 <template>
   <section>
     <VRow>
       <VCol cols="12">
-        <VCard title="Search Filter">
-          <!-- Filters -->
-          <VCardText>
+        <VCard title="Transaction">
+            <!-- search filter -->
+          <!-- <VCardText>
             <VRow>
               <VCol cols="12">
-                <!-- Search  -->
                 <div style="width: 20rem;">
                   <VTextField
                     v-model="filter.keyword"
@@ -170,7 +181,7 @@ const paginationInfo = computed(() => {
                 </div>
               </VCol>
             </VRow>
-          </VCardText>
+          </VCardText> -->
 
           <VDivider />
 
@@ -190,7 +201,7 @@ const paginationInfo = computed(() => {
             <div class="d-flex align-center flex-wrap gap-4">
               <VBtn
                 prepend-icon="tabler-plus"
-                to="/system-master/add"
+                to="/transaction/add"
               >
                 Add
               </VBtn>
@@ -198,6 +209,8 @@ const paginationInfo = computed(() => {
           </VCardText>
 
           <VDivider />
+
+          <!-- Transactions Table -->
           <VTable class="text-no-wrap">
             <VOverlay
               v-model="table.loading"
@@ -212,33 +225,32 @@ const paginationInfo = computed(() => {
               />
             </VOverlay>
           
-            <!-- table head -->
             <CTableHeaderSortable 
               :headers="[
-                { field: 'no', name: 'NO', sortable: true },                          // Assuming you have a 'no' field or you need to calculate it
-                { field: 'name_cust', name: 'NAMA', sortable: true },
-                { field: 'model_product', name: 'MODEL', sortable: true },
-                { field: 'address_cust', name: 'ALAMAT', sortable: true },
-                { field: 'no_hp_cust', name: 'NO TELP', sortable: true },
-                { field: 'prov_cust', name: 'PROVINSI', sortable: true },
-                { field: 'city_cust', name: 'KOTA/KAB', sortable: true },
-                { field: 'instagram_cust', name: 'INSTAGRAM', sortable: true },
-                { field: 'price_product', name: 'PEROLEHAN PRODUK TERJUAL', sortable: true }, // Assuming 'price_product' represents the sold product value
-                { field: 'prov_cust', name: 'PROVINSI', sortable: true },  // Duplicate field name, maybe double-check this
-                { field: 'actions', class: 'text-center' },
-                ]"
+                { field: 'no', name: 'No', sortable: true }, 
+                { field: 'name_cust', name: 'Nama', sortable: true },
+                { field: 'model_product', name: 'Model', sortable: true },
+                { field: 'address_cust', name: 'Alamat', sortable: true },
+                { field: 'no_hp_cust', name: 'No Telp', sortable: true },
+                { field: 'prov_cust', name: 'Provinsi', sortable: true },
+                { field: 'city_cust', name: 'Kota/Kab', sortable: true },
+                { field: 'instagram_cust', name: 'Instagram', sortable: true },
+                { field: 'price_product', name: 'Produk', sortable: true }, 
+                { field: 'prov_cust', name: 'Provinsi', sortable: true },
+                { field: 'actions',name:'Actions', class: 'text-center' },
+              ]"
               :order-by="table.orderBy"
               :dir="table.dir"
               @sort="doSort"
             />
-          
-            <!-- table body -->
+
+            <!-- Table Body -->
             <tbody>
               <tr
                 v-for="(row, index) in table.rows"
                 :key="row.transaction_id"
               >
-                <td>{{ index + 1 }}</td> <!-- Row number, if 'no' field is not present -->
+                <td>{{ index + 1 }}</td> <!-- Row number -->
                 <td>{{ row.name_cust }}</td>
                 <td>{{ row.model_product }}</td>
                 <td>{{ row.address_cust }}</td>
@@ -247,41 +259,32 @@ const paginationInfo = computed(() => {
                 <td>{{ row.city_cust }}</td>
                 <td>{{ row.instagram_cust }}</td>
                 <td>{{ row.price_product }}</td>
-                <td>{{ row.prov_cust }}</td> <!-- This is duplicated; consider reviewing this field -->
+                <td>{{ row.prov_cust }}</td> <!-- Duplicate field -->
                 <!-- Actions -->
-                  <td class="text-center" style="width: 5rem;">
-                    <VBtn
-                      icon
-                      size="x-small"
-                      color="default"
-                      variant="text"
-                      @click="$router.push(`/transaction/detail/${row.transaction_id}`)"
-                    >
-                      <VIcon size="22" icon="tabler-list"/>
-                    </VBtn>
-                    <VBtn
-                      icon
-                      size="x-small"
-                      color="default"
-                      variant="text"
-                      @click="$router.push(`/transaction/edit/${row.transaction_id}`)"
-                    >
-                      <VIcon size="22" icon="tabler-edit"/>
-                    </VBtn>
-                    <VBtn
-                      icon
-                      size="x-small"
-                      color="default"
-                      variant="text"
-                      @click="doDelete(row)"
-                    >
-                      <VIcon size="22" icon="tabler-trash"/>
-                    </VBtn>
-                  </td>
-              </tr>>
+                <td class="text-center" style="width: 5rem;">
+                  <VBtn
+                    icon
+                    size="x-small"
+                    color="default"
+                    variant="text"
+                    @click="$router.push(`/transaction/edit/${row.transaction_id}`)"
+                  >
+                    <VIcon size="22" icon="tabler-edit"/>
+                  </VBtn>
+                  <VBtn
+                    icon
+                    size="x-small"
+                    color="default"
+                    variant="text"
+                    @click="doDelete(row)"
+                  >
+                    <VIcon size="22" icon="tabler-trash"/>
+                  </VBtn>
+                </td>
+              </tr>
             </tbody>
-          
-            <!-- table footer -->
+
+            <!-- Table Footer -->
             <tfoot v-show="!table.rows.length">
               <tr>
                 <td colspan="10" class="text-center">
@@ -290,8 +293,6 @@ const paginationInfo = computed(() => {
               </tr>
             </tfoot>
           </VTable>
-          
-
 
           <VDivider />
 
@@ -311,8 +312,22 @@ const paginationInfo = computed(() => {
         </VCard>
       </VCol>
     </VRow>
+
+    <!-- Error Modal -->
+    <VDialog v-model="errorModal" max-width="500">
+      <VCard>
+        <VCardTitle class="headline">Error</VCardTitle>
+        <VCardText>{{ errorMessage }}</VCardText>
+        <VCardActions>
+          <VSpacer></VSpacer>
+          <VBtn color="primary" text @click="errorModal = false">Close</VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+
   </section>
 </template>
+
 
 <route lang="yaml">
 meta:

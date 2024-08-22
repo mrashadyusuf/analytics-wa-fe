@@ -1,10 +1,11 @@
 import constants from "@/plugins/casl/constants"
 
 export default [
+
   {
-    title: 'System Master',
-    to: { path: '/system-master' },
-    icon: { icon: 'tabler-home-cog' },
+    title: 'Transaction',
+    to: { path: '/transaction' },
+    icon: { icon: 'tabler-credit-card-pay' },
     subject: constants.SUBJECT.SYSTEMS,
     action: constants.ACTION.READ,
   },

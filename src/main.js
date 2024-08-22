@@ -14,6 +14,9 @@ import '@core/scss/template/index.scss'
 import '@styles/styles.scss'
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
+import 'vuetify/styles'
+import '@vuepic/vue-datepicker/dist/main.css'
+import VueDatePicker from '@vuepic/vue-datepicker';
 
 loadFonts()
 
@@ -32,6 +35,8 @@ app.use(abilitiesPlugin, ability, {
 
 // Provide
 app.provide('$constants', constants)
+
+app.component('VueDatePicker', VueDatePicker);
 
 // Mount vue app
 app.mount('#app')

@@ -13,6 +13,7 @@
         "@casl/vue": "^2.2.0",
         "@floating-ui/dom": "1.0.4",
         "@tabler/icons": "^1.97.0",
+        "@vuepic/vue-datepicker": "^9.0.2",
         "@vueuse/core": "^9.5.0",
         "@vueuse/math": "^9.5.0",
         "apexcharts-clevision": "^3.28.5",
@@ -37,7 +38,7 @@
         "vue-sweetalert2": "^5.0.5",
         "vue3-apexcharts": "^1.4.1",
         "vue3-perfect-scrollbar": "^1.6.0",
-        "vuetify": "3.0.3",
+        "vuetify": "^3.7.0",
         "webfontloader": "^1.6.28"
     },
     "devDependencies": {

@@ -47,12 +47,11 @@ const doLogin = async () => {
   formState.loading = true
   try {
     // Make API request to your backend
-    const response = await axios.post('http://127.0.0.1:8000/auth/login', {
+    const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/login`, {
       username: formData.username,
       password: formData.password,
     })
 
-    console.log("response", response)
     // You can use actual API response or mock data for demonstration
     const { userData, userPermissions } = userDt
 
@@ -71,13 +70,13 @@ const doLogin = async () => {
 
     authUtils.setUserData({
       fullname: "admin",
-      email: "admin@gmail.com",
+      email: "admin@demo.com",
       group: userData.group_code,
       avatar: userData.avatar,
       homeRoute: menu.path,
     })
 
-    router.replace(authUtils.getHomeRouteForLoggedInUser())
+    router.replace('/transaction')
   } catch (e) {
     // API error handling
     if (e.response && !e.handled) {
@@ -170,10 +169,7 @@ const doLogin = async () => {
             variant="tonal"
           >
             <p class="text-caption mb-2">
-              Admin Email: <strong>admin@demo.com</strong> / Pass: <strong>admin</strong>
-            </p>
-            <p class="text-caption mb-0">
-              Client Email: <strong>client@demo.com</strong> / Pass: <strong>client</strong>
+              Admin Username: <strong>admin</strong> / Pass: <strong>admin</strong>
             </p>
           </VAlert>
         </VCardText>
@@ -195,8 +191,8 @@ const doLogin = async () => {
               <VCol cols="12">
                 <VTextField
                   v-model="formData.username"
-                  label="Email"
-                  type="email"
+                  label="Username"
+                  type="text"
                   :rules="[requiredValidator]"
                   :error-messages="formErrors.username"
                 />
