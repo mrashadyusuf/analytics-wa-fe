@@ -24,11 +24,14 @@ const table = reactive({
   totalRows: 0,
 })
 
-const getTransactions = async (offset = 0, limit = 10) => {
+const getTransactions = async (offset = 0, limit = 10,keyword) => {
+  console.log("keyword",keyword)
+
   const response = await axiosInstance.get('transactions/', {
     params: {
       offset: offset,
-      limit: limit
+      limit: limit,
+      search:keyword
     }
   })
   .then((res) => {
@@ -60,7 +63,7 @@ const doSearch = async options => {
       dir: options?.dir ?? table.dir,
     }
 
-    const response = await getTransactions((params.page - 1) * params.perPage, params.perPage) // Ensure await is used here
+    const response = await getTransactions((params.page - 1) * params.perPage, params.perPage,params.keyword) // Pass params here
   
     if (response && response.status === 200) {
       table.rows = response.data.transactions;
@@ -70,11 +73,9 @@ const doSearch = async options => {
       table.totalPage = Math.ceil(response.data.total_all_data / table.perPage);
     } else if (response && response.status === 401) {
       console.error('Unauthorized access - redirecting to login.');
-      // Show the error message in the modal
       errorMessage.value = 'Unauthorized access. You will be logged out in 3 seconds.';
       errorModal.value = true;
 
-      // Trigger logout after 3 seconds
       setTimeout(() => {
         doLogout(router, route)
       }, 3000);    
@@ -93,6 +94,7 @@ const doSearch = async options => {
   }
   table.loading = false
 }
+
 
 const doDelete = item => {
   const currentThemeName = vuetifyTheme.name.value
@@ -172,7 +174,7 @@ const formatCurrency=(value) => {
       <VCol cols="12">
         <VCard title="Transaction">
             <!-- search filter -->
-          <!-- <VCardText>
+          <VCardText>
             <VRow>
               <VCol cols="12">
                 <div style="width: 20rem;">
@@ -186,7 +188,7 @@ const formatCurrency=(value) => {
                 </div>
               </VCol>
             </VRow>
-          </VCardText> -->
+          </VCardText>
 
           <VDivider />
 
