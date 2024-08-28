@@ -1,0 +1,36 @@
+@import 'sweetalert2/src/variables';
+
+// Appearance animation
+@keyframes swal2-fade-show {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+ 
+// Disppearance animation
+@keyframes swal2-fade-hide {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+// ANIMATIONS
+$swal2-show-animation: swal2-fade-show .2s ease;
+$swal2-hide-animation: swal2-fade-hide .2s ease;
+
+// COMMON VARIABLES FOR ALL ACTION BUTTONS
+$swal2-button-darken-hover: rgba($swal2-white, 0.1);
+$swal2-button-darken-active: rgba($swal2-white, 0.1);
+
+// LOADER : USE PRIMARY COLOR
+$swal2-loader-border-color: #7367F0 transparent #7367F0 transparent;
+$swal2-loader-border-width: 0.2em;
+
+.swal2-actions button.swal2-styled:focus {
+    box-shadow: none;
+}
+
+body.swal2-shown {
+    padding-right: 0px !important;
+}
+
+@import 'sweetalert2/src/sweetalert2';
+
