@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "9093:9090"  # Mengekspos port 9090 di host dan container
+      - "9090:9090"  # Mengekspos port 9090 di host dan container
     volumes:
       - .:/app
       - /app/node_modules
