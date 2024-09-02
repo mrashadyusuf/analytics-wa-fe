@@ -45,6 +45,8 @@ const formData = reactive({
   created_dt:  '',
   created_by:  '',
   transaction_dt: '',
+  kuantitas: '',
+
 })
 
 // Form errors model
@@ -149,6 +151,7 @@ const doSubmit = async () => {
       created_by: formData.created_by,
       created_dt: new Date().toISOString(),
       transaction_dt: formData.transaction_dt,
+      kuantitas: formData.kuantitas
     }
 
     let response = await updateTransaction(transactionId, body);
@@ -280,7 +283,18 @@ onMounted(() => {
                       :rules="[requiredValidator]"
                       :error-messages="formErrors.price_product"
                     />
-                  </VCol>
+                  </VCol> 
+                <!-- Kuantitas Produk -->
+                <VCol cols="12">
+                  <VTextField
+                    v-model="formData.kuantitas"
+                    label="Kuantitas Produk"
+                    placeholder="Kuantitas Produk"
+                    type="number"
+                    :rules="[requiredValidator]"
+                    :error-messages="formErrors.kuantitas_produk"
+                  />
+                </VCol>    
                   
                   <!-- Nomor Telepon Pelanggan -->
                   <VCol cols="12">
