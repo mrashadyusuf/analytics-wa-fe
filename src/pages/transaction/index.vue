@@ -238,6 +238,7 @@ const formatCurrency=(value) => {
                 { field: 'transaction_id', name: 'ID Transaksi', class: 'text-center' },
                 { field: 'name_cust', name: 'Nama', class: 'text-center' },
                 { field: 'model_product', name: 'Model', class: 'text-center' },
+                { field: 'kuantitas', name: 'Kuantitas', class: 'text-center' },
                 { field: 'price_product', name: 'Harga', class: 'text-center harga-column' },
                 { field: 'address_cust', name: 'Alamat', class: 'text-center' },
                 { field: 'no_hp_cust', name: 'No Telp', class: 'text-center' },
@@ -261,6 +262,7 @@ const formatCurrency=(value) => {
                 <td style="text-align: center;">{{ row.transaction_id }}</td>
                 <td style="text-align: center;">{{ row.name_cust }}</td>
                 <td style="text-align: center;">{{ row.model_product }}</td>
+                <td style="text-align: center;">{{ row.kuantitas }}</td>
                 <td style="text-align: right; position: relative;">
                   <span style="position: absolute; left: 10px;">Rp</span>
                   <span>{{ formatCurrency(row.price_product) }}</span>                
