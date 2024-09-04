@@ -5,7 +5,7 @@ import axios from 'axios'
 // Create an Axios instance
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL, // Accessing the environment variable
-  timeout: 10000, // Optional: Set a timeout for requests
+  timeout: 30000, // Optional: Set a timeout for requests
 })
 
 // Set up an interceptor to add the Authorization header with the Bearer token
