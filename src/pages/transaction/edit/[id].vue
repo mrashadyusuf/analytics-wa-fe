@@ -24,7 +24,7 @@ const formState = reactive({
 
 // Date setup
 const now = new Date(); // Get the current time in UTC
-const utcPlus8 = new Date(now.getTime() + 8 * 60 * 60 * 1000); // Adjust time to UTC+8
+const utcPlus8 = new Date(now.getTime() + 7 * 60 * 60 * 1000); // Adjust time to UTC+8
 const today = utcPlus8.toISOString(); // Format as ISO string
 
 // Form data model
@@ -39,9 +39,9 @@ const formData = reactive({
   prov_cust: '',
   address_cust: '',
   instagram_cust: '',
-  created_by: 'SYSTEM',
-  updated_dt: today,
-  updated_by: 'SYSTEM',
+  created_by: '',
+  updated_dt: '',
+  updated_by: '',
   created_dt:  '',
   created_by:  '',
   transaction_dt: '',
@@ -102,9 +102,6 @@ const loadTransactionData = async (transactionId) => {
 
   if (response && response.status === 200) {
     Object.assign(formData, response.data);
-    formData.created_dt = response.data.created_dt;
-    formData.updated_dt = response.data.updated_dt;
-    formData.created_by = response.data.created_by;
     date.value = new Date(response.data.transaction_dt);
   } else if (response && response.status === 401) {
       errorMessage.value = 'Unauthorized access. You will be logged out in 3 seconds.';
@@ -146,10 +143,10 @@ const doSubmit = async () => {
       prov_cust: formData.prov_cust,
       address_cust: formData.address_cust,
       instagram_cust: formData.instagram_cust,
-      updated_by: formData.updated_by,
-      updated_dt: new Date().toISOString(),
+      updated_by: 'SYSTEM',
+      updated_dt: today,
       created_by: formData.created_by,
-      created_dt: new Date().toISOString(),
+      created_dt: formData.created_dt,
       transaction_dt: formData.transaction_dt,
       kuantitas: formData.kuantitas
     }
@@ -159,7 +156,7 @@ const doSubmit = async () => {
     if (response && response.status === 200) {
       swal.fire({
         icon: 'success',
-        title: 'Transaction updated successfully',
+        title: 'Transaction updated ssuccessfully',
         toast: true,
         position: 'top-end',
         showConfirmButton: false,

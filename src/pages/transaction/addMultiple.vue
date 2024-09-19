@@ -370,9 +370,9 @@ const createTransaction = async (body) => {
                   Remove Transaction
                 </VBtn>
                                 <!-- Button to Add More Transactions -->
-                <VBtn type="button" color="primary" @click="addTransaction">
-                  Add Transaction
-                </VBtn>
+                  <VBtn type="button" color="primary" @click="addTransaction">
+                    Add Transaction
+                  </VBtn>
               </VCol>
             </VRow>
 
