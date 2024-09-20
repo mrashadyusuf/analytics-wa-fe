@@ -23,8 +23,8 @@ const formState = reactive({
 
 // Setting today's date as default
 const now = new Date(); // Get the current time in UTC
-const utcPlus8 = new Date(now.getTime() + 7 * 60 * 60 * 1000); // Adjust time to UTC+7
-const today = utcPlus8.toISOString(); // Format as ISO string
+const utcPlus7 = new Date(now.getTime() + 7 * 60 * 60 * 1000); // Adjust time to UTC+7
+const today = utcPlus7.toISOString(); // Format as ISO string
 
 // Form data model
 const formData = reactive({
