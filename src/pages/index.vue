@@ -2,28 +2,24 @@
   <div>
     <VCard
       class="mb-6"
-      title="Kick start your project 🚀"
+      title="Sales"
     >
-      <VCardText>All the best for your new project.</VCardText>
-      <VCardText>
-        Please make sure to read our <a
-          href="https://pixinvent.com/demo/vuexy-vuejs-admin-dashboard-template/documentation/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-decoration-none"
-        >
-          Template Documentation
-        </a> to understand where to go from here and how to use our template.
-      </VCardText>
+      <iframe id="redash-iframe-sales" src="http://ptbsp.ddns.net:36502/public/dashboards/twavZa9ft4UYAY4TuIJWTxaMmM8pxqTTjqsAO20W?org_slug=default" width="100%" height="1800px" frameborder="0"></iframe>
+    </VCard>
+    <VCard
+      class="mb-6"
+      title="Customer"
+    >
+      <iframe id="redash-iframe-" src="http://ptbsp.ddns.net:36502/public/dashboards/U9InpuUeKHrMqz58xDqrqXhr13FpToLdYeRUEp8r?org_slug=default" width="100%" height="1800px" frameborder="0"></iframe>
     </VCard>
 
-    <VCard title="Want to integrate JWT? 🔒">
-      <VCardText>We carefully crafted JWT flow so you can implement JWT with ease and with minimum efforts.</VCardText>
-      <VCardText>Please read our  JWT Documentation to get more out of JWT authentication.</VCardText>
-    </VCard>
   </div>
 </template>
-
+<script>
+    function resizeIframe(iframe) {
+        iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
+    }
+</script>
 <route lang="yaml">
 meta:
   subject: Dashboard

@@ -166,6 +166,19 @@ const formatCurrency=(value) => {
     let val = (value/1).toFixed(0).replace('.', ',')
     return `${val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`
 }
+
+const dialogAdd = ref(false);
+
+
+const addSingle = () => {
+  router.push("/transaction/add");
+  dialogAdd.value = false; // Close the modal after action
+};
+
+const addMultiple = () => {
+  router.push("/transaction/addMultiple");
+  dialogAdd.value = false; // Close the modal after action
+};
 </script>
 
 <template>
@@ -208,7 +221,7 @@ const formatCurrency=(value) => {
             <div class="d-flex align-center flex-wrap gap-4">
               <VBtn
                 prepend-icon="tabler-plus"
-                to="/transaction/add"
+                @click="dialogAdd = true"
               >
                 Add
               </VBtn>
@@ -336,6 +349,24 @@ const formatCurrency=(value) => {
         </VCardActions>
       </VCard>
     </VDialog>
+
+   <!-- Modal dialog -->
+   <VDialog v-model="dialogAdd" max-width="300">
+    <VCard>
+      <VCardTitle class="text-h5 text-center">Add Transaction</VCardTitle>
+      <VCardActions class="d-flex justify-center">
+        <!-- Button to add single transaction -->
+        <VBtn color="primary" @click="addSingle">
+          Add Single
+        </VBtn>
+
+        <!-- Button to add multiple transactions -->
+        <VBtn color="primary" @click="addMultiple">
+          Add Multiple
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
 
   </section>
 </template>

@@ -4,7 +4,7 @@ import userManagement from './user-management'
 
 
 export default [
-  // ...dashboard,
+  ...dashboard,
   ...systemMaster,
   // ...userManagement,
 ]
